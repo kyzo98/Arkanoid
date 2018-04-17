@@ -3,64 +3,99 @@
 #include <stdlib.h>
 #include <iostream>
 #include <windows.h>
-#include <fstream>
 
 Board::Board()
 {
-	getData();
-	if (rowsFilled > rows / 2)
-		rowsFilled = rows / 2;
+	//Filas, columna, filas de bloques, score
+	rows = 20+2;
+	columns = 30+2;
+	rowsFilled = rows / 2;
+	score = 0;
 
+	//Valores de la cola points
+	for (int i = 0; i < rowsFilled * (columns-2); i++) {
+		points.push_back(rand() % 5 + 1);
+	}
+
+	//Valores iniciales de la ball
 	ball.position.x = columns / 2;
 	ball.position.y = rows / 2;
 	ball.velocity.x = -1;
 	ball.velocity.y = 1;
 	ball.sprite = '*';
 
+	//Valores iniciales de la platform
 	for (int i = 0; i < 3; i++) {
 		platform.position[i].x = columns / 2 + i;
 		platform.position[i].y = rows - 3;
 	}
 	platform.sprite = '-';
 
-	box = new char*[rows];
+	//Creamos el array 2D de box
+	box = new Box*[rows];
 	for (int i = 0; i < rows; i++)
-		box[i] = new char[columns];
+		box[i] = new Box[columns];
 }
 
-Board::Board(int rows_, int columns_, int rowsFilled_)
+Board::Board(int data[])
 {
-	rows = rows_ + 2;
-	columns = columns_ + 2;
-	rowsFilled = rowsFilled_;
+	//Filas, columna, filas de bloques, score
+	rows = data[0] + 2;
+	columns = data[1] + 2;
+	rowsFilled = data[2];
+	score = 0;
 
+	//Valores de la cola points
+	for (int i = 0; i < rowsFilled * (columns - 2); i++) {
+		points.push_back(rand()%data[4] + data[3]);
+	}
+
+	//Valores iniciales de la ball
 	ball.position.x = columns / 2;
 	ball.position.y = rows / 2;
-	ball.velocity.x = 0;
+	ball.velocity.x = 1;
 	ball.velocity.y = 1;
 	ball.sprite = '*';
 
+	//Valores iniciales de la platform
 	for (int i = 0; i < 3; i++) {
 		platform.position[i].x = columns / 2 + i;
 		platform.position[i].y = rows - 3;
 	}
 	platform.sprite = '-';
 
-	box = new char*[rows];
+	//Creamos el array 2D de box
+	box = new Box*[rows];
 	for (int i = 0; i < rows; i++)
-		box[i] = new char[columns];
+		box[i] = new Box[columns];
 }
 
 Board::~Board()
 {
 }
 
-bool Board::platformColision() {
-	return (box[ball.position.y + ball.velocity.y][ball.position.x + ball.velocity.x] == '-');
+bool Board::platformCollision() {
+	bool collision = false;
+	for (int i = 0; i < 3; i++) {
+		if (((ball.position.y + ball.velocity.y == platform.position[i].y) && (ball.position.x + ball.velocity.x == platform.position[i].x)) || ((ball.position.y == platform.position[i].y) && (ball.position.x == platform.position[i].x)))
+			collision = true;
+	}
+	return collision;
+}
+
+bool Board::blockCollision() {
+	bool collision = false;
+	if (box[ball.position.y + ball.velocity.y][ball.position.x + ball.velocity.x].block == true) {
+		collision = true;
+		box[ball.position.y + ball.velocity.y][ball.position.x + ball.velocity.x].block = false;
+		score += points.front();
+		points.pop_front();
+	}
+	return collision;
 }
 
 bool Board::gameOver() {
-	if (GetAsyncKeyState(VK_ESCAPE))
+	if (GetAsyncKeyState(VK_ESCAPE) || points.empty())
 		return true;
 	else
 		return false;
@@ -69,31 +104,30 @@ bool Board::gameOver() {
 void Board::inicializeBoard() {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < columns; j++) {
-			if (i == 0 || i == rows - 1)
-				box[i][j] = '_';
-			else if (j == 0 || j == columns - 1)
-				box[i][j] = '|';
-			else if (i == ball.position.y && j == ball.position.x)
-				box[i][j] = ball.sprite;
-			else if (i <= rowsFilled)
-				box[i][j] = '@';
-			else
-				box[i][j] = ' ';
+			if (i == 0 || i == rows - 1) {
+				box[i][j].show = '_';
+				box[i][j].block = false;
+			}
+			else if (j == 0 || j == columns - 1) {
+				box[i][j].show = '|';
+				box[i][j].block = false;
+			}
+			else if (i == ball.position.y && j == ball.position.x) {
+				box[i][j].show = ball.sprite;
+				box[i][j].block = false;
+			}
+			else if (i <= rowsFilled) {
+				box[i][j].show = '@';
+				box[i][j].block = true;
+			}
+			else {
+				box[i][j].show = ' ';
+				box[i][j].block = false;
+			}
 		}
 	}
 	for (int i = 0; i < 3; i++)
-		box[platform.position[i].y][platform.position[i].x] = platform.sprite;
-}
-
-void Board::getData() {
-	char ignore;	//creo que esto es una cutrada pero por ahora es un "parche"
-	std::ifstream dataIn("data.txt");
-	if (dataIn.is_open()) {
-		while (!dataIn.eof()) {
-			dataIn >> rows >> ignore >> columns >> ignore >> rowsFilled >> ignore;
-		}
-		dataIn.close();
-	}
+		box[platform.position[i].y][platform.position[i].x].show = platform.sprite;
 }
 
 void Board::updatePlatform() {
@@ -119,13 +153,13 @@ void Board::updatePlatform() {
 	}
 
 	for (int i = 0; i < 3; i++)
-		box[platform.position[i].y][platform.position[i].x] = platform.sprite;
+		box[platform.position[i].y][platform.position[i].x].show = platform.sprite;
 }
 
 void Board::updateBall() {
-	if (ball.position.y == 1 || ball.position.y == rows - 2 || platformColision())
+	if (ball.position.y == 1 || ball.position.y == rows - 2 || platformCollision() || blockCollision())
 		ball.velocity.y *= -1;
-	if (ball.position.x == 1 || ball.position.x == columns - 2 || platformColision())
+	if (ball.position.x == 1 || ball.position.x == columns - 2 || platformCollision() || blockCollision())
 		ball.velocity.x *= -1;
 
 	ball.position.x += ball.velocity.x;
@@ -137,24 +171,30 @@ void Board::updateBoard() {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < columns; j++) {
 			if (i == 0 || i == rows - 1)
-				box[i][j] = '_';
+				box[i][j].show = '_';
 			else if (j == 0 || j == columns - 1)
-				box[i][j] = '|';
+				box[i][j].show = '|';
 			else if (i == ball.position.y && j == ball.position.x)
-				box[i][j] = ball.sprite;
-			else if (i <= rowsFilled)
-				box[i][j] = '@';
+				box[i][j].show = ball.sprite;
+			else if (i <= rowsFilled) {
+				if (box[i][j].block)
+					box[i][j].show = '@';
+				else
+					box[i][j].show = ' ';
+			}
 			else
-				box[i][j] = ' ';
+				box[i][j].show = ' ';
 		}
 	}
 	updatePlatform();
 }
 
 void Board::printBoard() {
+	std::cout << "Score: " << score << std::endl;
+	std::cout << std::endl;
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < columns; j++)
-			std::cout << box[i][j];
+			std::cout << box[i][j].show;
 		std::cout<<std::endl;
 	}
 }
