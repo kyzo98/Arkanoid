@@ -15,7 +15,7 @@ class Board
 		char sprite;
 	};
 	struct Platform {
-		Position position;
+		Position position[3];
 		char sprite;
 	};
 

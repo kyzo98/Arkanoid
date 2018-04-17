@@ -17,8 +17,10 @@ Board::Board()
 	ball.velocity.y = 1;
 	ball.sprite = '*';
 
-	platform.position.x = columns / 2;
-	platform.position.y = rows - 3;
+	for (int i = 0; i < 3; i++) {
+		platform.position[i].x = columns / 2 + i;
+		platform.position[i].y = rows - 3;
+	}
 	platform.sprite = '-';
 
 	box = new char*[rows];
@@ -38,8 +40,10 @@ Board::Board(int rows_, int columns_, int rowsFilled_)
 	ball.velocity.y = 1;
 	ball.sprite = '*';
 
-	platform.position.x = columns / 2;
-	platform.position.y = rows - 3;
+	for (int i = 0; i < 3; i++) {
+		platform.position[i].x = columns / 2 + i;
+		platform.position[i].y = rows - 3;
+	}
 	platform.sprite = '-';
 
 	box = new char*[rows];
@@ -77,9 +81,8 @@ void Board::inicializeBoard() {
 				box[i][j] = ' ';
 		}
 	}
-	box[platform.position.y][platform.position.x] = platform.sprite;
-	box[platform.position.y][platform.position.x - 1] = platform.sprite;
-	box[platform.position.y][platform.position.x + 1] = platform.sprite;
+	for (int i = 0; i < 3; i++)
+		box[platform.position[i].y][platform.position[i].x] = platform.sprite;
 }
 
 void Board::getData() {
@@ -94,23 +97,31 @@ void Board::getData() {
 }
 
 void Board::updatePlatform() {
+	
+
 	if (GetAsyncKeyState(VK_LEFT)) {
-		platform.position.x--;
+		for (int i = 0; i < 3; i++) {
+			platform.position[i].x--;
+			if (platform.position[i].x == columns - 2)
+				platform.position[i].x = 2;
+			else if (platform.position[i].x == 1) {
+				platform.position[i].x = columns - 3;
+			}
+		}
 	}
 	else if (GetAsyncKeyState(VK_RIGHT)) {
-		platform.position.x++;
+		for (int i = 0; i < 3; i++) {
+			platform.position[i].x--;
+			if (platform.position[i].x == columns - 2)
+				platform.position[i].x = 2;
+			else if (platform.position[i].x == 1) {
+				platform.position[i].x = columns - 3;
+			}
+		}
 	}
-	if (platform.position.x == columns - 2) {
-		platform.position.x = 2;
-	}
-	else if (platform.position.x == 1) {
-		platform.position.x = columns - 3;
-	}
-	int leftPlatform = platform.position.x - 1;
-	int rightPlatform = platform.position.x + 1;
-	box[platform.position.y][platform.position.x] = platform.sprite;
-	box[platform.position.y][leftPlatform] = platform.sprite;
-	box[platform.position.y][rightPlatform] = platform.sprite;
+
+	for (int i = 0; i < 3; i++)
+		box[platform.position[i].y][platform.position[i].x] = platform.sprite;
 }
 
 void Board::updateBall() {
