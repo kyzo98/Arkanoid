@@ -97,25 +97,23 @@ void Board::getData() {
 }
 
 void Board::updatePlatform() {
-	
-
 	if (GetAsyncKeyState(VK_LEFT)) {
 		for (int i = 0; i < 3; i++) {
 			platform.position[i].x--;
-			if (platform.position[i].x == columns - 2)
-				platform.position[i].x = 2;
-			else if (platform.position[i].x == 1) {
-				platform.position[i].x = columns - 3;
+			if (platform.position[i].x == columns - 1)
+				platform.position[i].x = 1;
+			else if (platform.position[i].x == 0) {
+				platform.position[i].x = columns - 2;
 			}
 		}
 	}
 	else if (GetAsyncKeyState(VK_RIGHT)) {
 		for (int i = 0; i < 3; i++) {
-			platform.position[i].x--;
-			if (platform.position[i].x == columns - 2)
-				platform.position[i].x = 2;
-			else if (platform.position[i].x == 1) {
-				platform.position[i].x = columns - 3;
+			platform.position[i].x++;
+			if (platform.position[i].x == columns - 1)
+				platform.position[i].x = 1;
+			else if (platform.position[i].x == 0) {
+				platform.position[i].x = columns - 2;
 			}
 		}
 	}
