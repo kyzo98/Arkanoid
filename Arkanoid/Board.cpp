@@ -85,9 +85,9 @@ bool Board::platformCollision() {
 
 bool Board::blockCollision() {
 	bool collision = false;
-	if (box[ball.position.y + ball.velocity.y][ball.position.x + ball.velocity.x].block == true) {
+	if (box[ball.position.y][ball.position.x].block == true) {
 		collision = true;
-		box[ball.position.y + ball.velocity.y][ball.position.x + ball.velocity.x].block = false;
+		box[ball.position.y][ball.position.x].block = false;
 		score += points.front();
 		points.pop_front();
 	}
@@ -159,7 +159,8 @@ void Board::updatePlatform() {
 void Board::updateBall() {
 	if (ball.position.y == 1 || ball.position.y == rows - 2 || platformCollision() || blockCollision())
 		ball.velocity.y *= -1;
-	if (ball.position.x == 1 || ball.position.x == columns - 2 || platformCollision() || blockCollision())
+
+	if (ball.position.x == 1 || ball.position.x == columns - 2)
 		ball.velocity.x *= -1;
 
 	ball.position.x += ball.velocity.x;
