@@ -37,5 +37,18 @@ int main() {
 		Sleep(100);								//100 milisegundos entre acción y acción
 	}
 
+	if (prueba.youWin()) {
+		system("cls");
+		std::cout << "YOU WIN" << std::endl;
+		std::cout << "Score: " << prueba.getScore() << std::endl;
+	}
+
+	if (prueba.gameOver()) {
+		system("cls");
+		std::cout << "YOU LOSE" << std::endl;
+		std::cout << "Score: " << prueba.getScore() << std::endl;
+	}
+
+	system("pause");
 	return 0;
 }

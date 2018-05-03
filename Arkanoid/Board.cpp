@@ -95,10 +95,21 @@ bool Board::blockCollision() {
 }
 
 bool Board::gameOver() {
-	if (GetAsyncKeyState(VK_ESCAPE) || points.empty())
+	if (GetAsyncKeyState(VK_ESCAPE) || youWin())
 		return true;
 	else
 		return false;
+}
+
+bool Board::youWin() {
+	if (points.empty())
+		return true;
+	else
+		return false;
+}
+
+int Board::getScore() {
+	return score;
 }
 
 void Board::inicializeBoard() {

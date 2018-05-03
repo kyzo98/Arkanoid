@@ -44,6 +44,9 @@ public:
 	bool platformCollision();	//Devuelve true si la siguiente/actual posición de la ball forma parte de la plataforma
 	bool blockCollision();		//Devuelve true si la siguiente posición de la ball es un block true
 	bool gameOver();
+	bool youWin();
+
+	int getScore();
 
 	void inicializeBoard();
 
