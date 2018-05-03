@@ -157,7 +157,7 @@ void Board::updatePlatform() {
 }
 
 void Board::updateBall() {
-	if (ball.position.y == 1 || ball.position.y == rows - 2 || platformCollision() || blockCollision())
+	if (blockCollision() || ball.position.y == 1 || ball.position.y == rows - 2 || platformCollision())
 		ball.velocity.y *= -1;
 
 	if (ball.position.x == 1 || ball.position.x == columns - 2)
