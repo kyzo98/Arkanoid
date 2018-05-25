@@ -11,6 +11,7 @@ Board::Board()
 	columns = 30+2;
 	rowsFilled = rows / 2;
 	score = 0;
+	lives = 3;
 
 	//Valores de la cola points
 	for (int i = 0; i < rowsFilled * (columns-2); i++) {
@@ -44,6 +45,7 @@ Board::Board(int data[])
 	columns = data[1] + 2;
 	rowsFilled = data[2];
 	score = 0;
+	lives = 3;
 
 	//Valores de la cola points
 	for (int i = 0; i < rowsFilled * (columns - 2); i++) {
@@ -95,7 +97,7 @@ bool Board::blockCollision() {
 }
 
 bool Board::gameOver() {
-	if (GetAsyncKeyState(VK_ESCAPE) || youWin())
+	if (GetAsyncKeyState(VK_ESCAPE) || youWin() || lives <= 0)
 		return true;
 	else
 		return false;
@@ -168,7 +170,21 @@ void Board::updatePlatform() {
 }
 
 void Board::updateBall() {
-	if (blockCollision() || ball.position.y == 1 || ball.position.y == rows - 2 || platformCollision())
+	if (ball.position.y == rows - 2) {
+		lives--;
+		if (lives > 0) {
+			ball.position.x = columns / 2;
+			ball.position.y = rows / 2;
+			if(rand() % 2 == 0)
+				ball.velocity.y = -1;
+			else
+				ball.velocity.y = 1;
+
+			ball.velocity.x = -1;
+		}
+	}
+
+	if (blockCollision() || ball.position.y == 1 || platformCollision())
 		ball.velocity.y *= -1;
 
 	if (ball.position.x == 1 || ball.position.x == columns - 2)
@@ -203,6 +219,7 @@ void Board::updateBoard() {
 
 void Board::printBoard() {
 	std::cout << "Score: " << score << std::endl;
+	std::cout << "Lives: " << lives << std::endl;
 	std::cout << std::endl;
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < columns; j++)

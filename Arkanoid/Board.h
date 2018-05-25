@@ -27,6 +27,7 @@ class Board
 
 private:
 	int score;					//Variable dónde se guarda el score de la partida
+	int lives;					//Número de vidas
 	int rows;					//Número de filas del tablero
 	int columns;				//Número de columnas del tablero
 	Box **box;					//Array de caracteres para el tablero
@@ -43,8 +44,8 @@ public:
 
 	bool platformCollision();	//Devuelve true si la siguiente/actual posición de la ball forma parte de la plataforma
 	bool blockCollision();		//Devuelve true si la siguiente posición de la ball es un block true
-	bool gameOver();
-	bool youWin();
+	bool gameOver();			//Devuelve true si se apreta esc
+	bool youWin();				//Devuelve true si rompes todos los bloques
 
 	int getScore();
 
@@ -55,4 +56,3 @@ public:
 	void updateBoard();
 	void printBoard();
 };
-
