@@ -176,11 +176,11 @@ void Board::updateBall() {
 			ball.position.x = columns / 2;
 			ball.position.y = rows / 2;
 			if(rand() % 2 == 0)
-				ball.velocity.y = -1;
+				ball.velocity.x = -1;
 			else
-				ball.velocity.y = 1;
+				ball.velocity.x = 1;
 
-			ball.velocity.x = -1;
+			ball.velocity.y = 1;
 		}
 	}
 
