@@ -20,7 +20,7 @@ Board::Board()
 
 	//Valores iniciales de la ball
 	ball.position.x = columns / 2;
-	ball.position.y = rows / 2;
+	ball.position.y = rowsFilled + 1;
 	ball.velocity.x = -1;
 	ball.velocity.y = 1;
 	ball.sprite = '*';
@@ -54,7 +54,7 @@ Board::Board(int data[])
 
 	//Valores iniciales de la ball
 	ball.position.x = columns / 2;
-	ball.position.y = rows / 2;
+	ball.position.y = rowsFilled + 1;
 	ball.velocity.x = 1;
 	ball.velocity.y = 1;
 	ball.sprite = '*';
@@ -97,7 +97,7 @@ bool Board::blockCollision() {
 }
 
 bool Board::gameOver() {
-	if (GetAsyncKeyState(VK_ESCAPE) || youWin() || lives <= 0)
+	if (youWin() || lives <= 0)
 		return true;
 	else
 		return false;
@@ -112,6 +112,25 @@ bool Board::youWin() {
 
 int Board::getScore() {
 	return score;
+}
+
+int Board::difficultyMs() {
+	float totalBlocks = rowsFilled * (columns - 2);
+	float actualBlocks = points.size();
+
+	float percent = (actualBlocks / totalBlocks) * 100;
+	if (percent > 75) {
+		return 100;
+	}
+	else if (percent > 50) {
+		return 85;
+	}
+	else if (percent > 25) {
+		return 70;
+	}
+	else {
+		return 60;
+	}
 }
 
 void Board::inicializeBoard() {
@@ -143,8 +162,8 @@ void Board::inicializeBoard() {
 		box[platform.position[i].y][platform.position[i].x].show = platform.sprite;
 }
 
-void Board::updatePlatform() {
-	if (GetAsyncKeyState(VK_LEFT)) {
+void Board::updatePlatform(bool l, bool r) {
+	if (l) {
 		for (int i = 0; i < 3; i++) {
 			platform.position[i].x--;
 			if (platform.position[i].x == columns - 1)
@@ -154,7 +173,7 @@ void Board::updatePlatform() {
 			}
 		}
 	}
-	else if (GetAsyncKeyState(VK_RIGHT)) {
+	else if (r) {
 		for (int i = 0; i < 3; i++) {
 			platform.position[i].x++;
 			if (platform.position[i].x == columns - 1)
@@ -174,7 +193,7 @@ void Board::updateBall() {
 		lives--;
 		if (lives > 0) {
 			ball.position.x = columns / 2;
-			ball.position.y = rows / 2;
+			ball.position.y = rowsFilled + 1;
 			if(rand() % 2 == 0)
 				ball.velocity.x = -1;
 			else
@@ -194,7 +213,7 @@ void Board::updateBall() {
 	ball.position.y += ball.velocity.y;
 }
 
-void Board::updateBoard() {
+void Board::updateBoard(bool l, bool r) {
 	updateBall();
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < columns; j++) {
@@ -214,7 +233,7 @@ void Board::updateBoard() {
 				box[i][j].show = ' ';
 		}
 	}
-	updatePlatform();
+	updatePlatform(l, r);
 }
 
 void Board::printBoard() {

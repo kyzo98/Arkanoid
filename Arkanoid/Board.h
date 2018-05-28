@@ -47,12 +47,13 @@ public:
 	bool gameOver();			//Devuelve true si se apreta esc
 	bool youWin();				//Devuelve true si rompes todos los bloques
 
-	int getScore();
+	int getScore();				//Devuelve el score
+	int difficultyMs();			//Devuelve los milisegundos que tarda en hace refresh según el número de bloques restantes
 
-	void inicializeBoard();
+	void inicializeBoard();		//Prepara el board por primera vez
 
-	void updateBall();
-	void updatePlatform();
-	void updateBoard();
-	void printBoard();
+	void updateBall();			//Actualiza la bola
+	void updatePlatform(bool l, bool r);		//Actualiza la plataforma
+	void updateBoard(bool l, bool r);			//Actualiza todo el tablero
+	void printBoard();			//Pinta el tablero
 };
